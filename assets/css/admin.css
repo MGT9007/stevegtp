@@ -1,0 +1,313 @@
+/**
+ * SteveGPT Admin Styles
+ * Corporate theme (Black & Gold) for admin interface
+ * Based on MFSD Style Guide v1.0
+ */
+
+/* CSS Variables - Corporate Theme */
+:root {
+    --stevegpt-bg-primary: #111111;
+    --stevegpt-bg-secondary: #1A1A1A;
+    --stevegpt-bg-content: #F5F0E6;
+    --stevegpt-gold: #C9A84C;
+    --stevegpt-gold-hover: #E2C06A;
+    --stevegpt-text-dark: #1A1A1A;
+    --stevegpt-text-light: #F5F5F5;
+    --stevegpt-text-muted: #888888;
+    --stevegpt-border: #DDDDDD;
+    --stevegpt-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+/* Main Container */
+.stevegpt-admin {
+    background: var(--stevegpt-bg-content);
+    padding: 20px;
+    margin: 20px 20px 20px 0;
+    border-radius: 8px;
+}
+
+/* Page Title */
+.stevegpt-page-title {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    font-size: 36px;
+    color: var(--stevegpt-text-dark);
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stevegpt-icon {
+    font-size: 32px;
+}
+
+.stevegpt-subtitle {
+    font-family: "Lato", sans-serif;
+    font-size: 16px;
+    color: var(--stevegpt-text-muted);
+    margin: 0 0 30px 0;
+}
+
+/* Stats Grid */
+.stevegpt-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stevegpt-stat-card {
+    background: white;
+    border: 1px solid var(--stevegpt-gold);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--stevegpt-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stevegpt-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.stevegpt-stat-card.highlight {
+    background: linear-gradient(135deg, #FFF9E6 0%, white 100%);
+    border-width: 2px;
+}
+
+.stat-icon {
+    font-size: 36px;
+    line-height: 1;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-value {
+    font-family: "Playfair Display", serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--stevegpt-gold);
+    line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-family: "Lato", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--stevegpt-text-dark);
+    margin-bottom: 2px;
+}
+
+.stat-meta {
+    font-family: "Lato", sans-serif;
+    font-size: 12px;
+    color: var(--stevegpt-text-muted);
+}
+
+/* Sections */
+.stevegpt-section {
+    background: white;
+    border: 1px solid var(--stevegpt-border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--stevegpt-shadow);
+}
+
+.stevegpt-section h2 {
+    font-family: "Playfair Display", serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--stevegpt-text-dark);
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--stevegpt-gold);
+}
+
+/* Tables */
+.stevegpt-table {
+    border: 1px solid var(--stevegpt-border);
+}
+
+.stevegpt-table thead {
+    background: var(--stevegpt-bg-primary);
+}
+
+.stevegpt-table thead th {
+    color: var(--stevegpt-text-light);
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px;
+}
+
+.stevegpt-table tbody tr:hover {
+    background: #FFF9E6;
+}
+
+.stevegpt-table tbody td {
+    font-family: "Lato", sans-serif;
+    font-size: 14px;
+    color: var(--stevegpt-text-dark);
+    padding: 12px;
+}
+
+.stevegpt-table tbody tr.highlight {
+    background: #FFF9E6;
+    font-weight: 600;
+}
+
+/* Buttons */
+.stevegpt-btn,
+.stevegpt-btn-primary {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 24px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.stevegpt-btn-primary,
+.button-primary.stevegpt-btn-primary {
+    background: var(--stevegpt-gold);
+    color: var(--stevegpt-text-dark);
+}
+
+.stevegpt-btn-primary:hover,
+.button-primary.stevegpt-btn-primary:hover {
+    background: var(--stevegpt-gold-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(201, 168, 76, 0.3);
+}
+
+.stevegpt-btn {
+    background: var(--stevegpt-gold);
+    color: var(--stevegpt-text-dark);
+}
+
+.stevegpt-btn:hover {
+    background: var(--stevegpt-gold-hover);
+    color: var(--stevegpt-text-dark);
+    transform: translateY(-1px);
+}
+
+.stevegpt-btn.secondary {
+    background: white;
+    color: var(--stevegpt-text-dark);
+    border: 2px solid var(--stevegpt-gold);
+}
+
+.stevegpt-btn.secondary:hover {
+    background: var(--stevegpt-bg-content);
+    border-color: var(--stevegpt-gold-hover);
+}
+
+/* Quick Links Grid */
+.stevegpt-quick-links {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Form Elements */
+.stevegpt-admin .form-table th {
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    color: var(--stevegpt-text-dark);
+    padding: 16px 0;
+}
+
+.stevegpt-admin .form-table td {
+    padding: 16px 0;
+}
+
+.stevegpt-admin input[type="text"],
+.stevegpt-admin input[type="password"],
+.stevegpt-admin select {
+    font-family: "Lato", sans-serif;
+    font-size: 14px;
+    padding: 8px 12px;
+    border: 1px solid var(--stevegpt-border);
+    border-radius: 4px;
+    transition: border-color 0.2s ease;
+}
+
+.stevegpt-admin input[type="text"]:focus,
+.stevegpt-admin input[type="password"]:focus,
+.stevegpt-admin select:focus {
+    border-color: var(--stevegpt-gold);
+    outline: none;
+    box-shadow: 0 0 0 1px var(--stevegpt-gold);
+}
+
+.stevegpt-admin .description {
+    font-family: "Lato", sans-serif;
+    font-size: 13px;
+    color: var(--stevegpt-text-muted);
+    margin-top: 6px;
+}
+
+.stevegpt-admin .description a {
+    color: var(--stevegpt-gold);
+    text-decoration: underline;
+}
+
+.stevegpt-admin .description a:hover {
+    color: var(--stevegpt-gold-hover);
+}
+
+/* Notices */
+.stevegpt-notice {
+    border-left-width: 4px;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.stevegpt-notice p {
+    font-family: "Lato", sans-serif;
+    margin: 8px 0;
+}
+
+.stevegpt-notice code {
+    background: rgba(0,0,0,0.05);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+/* Load Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&family=Montserrat:wght@600;700&display=swap');
+
+/* Responsive */
+@media (max-width: 782px) {
+    .stevegpt-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stevegpt-page-title {
+        font-size: 28px;
+    }
+    
+    .stevegpt-quick-links {
+        flex-direction: column;
+    }
+    
+    .stevegpt-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

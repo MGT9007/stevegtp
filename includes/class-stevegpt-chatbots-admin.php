@@ -143,10 +143,38 @@ class SteveGPT_Chatbots_Admin {
             'is_active' => isset($post_data['is_active']) ? 1 : 0
         );
         
+        // Handle avatar image upload
+        $avatar_image = '';
+        
+        // Check if removing existing image
+        if (isset($post_data['remove_avatar_image'])) {
+            $avatar_image = ''; // Clear the image
+        } elseif (!empty($_FILES['appearance_avatar_image']['name'])) {
+            // New image uploaded
+            $uploaded = self::handle_avatar_upload($_FILES['appearance_avatar_image']);
+            if (!is_wp_error($uploaded)) {
+                $avatar_image = $uploaded;
+            }
+        } else {
+            // Keep existing image if present
+            if (isset($post_data['chatbot_id'])) {
+                global $wpdb;
+                $existing = $wpdb->get_var($wpdb->prepare(
+                    "SELECT appearance FROM {$wpdb->prefix}stevegpt_chatbots WHERE chatbot_id = %s",
+                    $post_data['chatbot_id']
+                ));
+                if ($existing) {
+                    $existing_appearance = json_decode($existing, true);
+                    $avatar_image = $existing_appearance['avatar_image'] ?? '';
+                }
+            }
+        }
+        
         // Build appearance array
         $data['appearance'] = array(
             'theme' => sanitize_text_field($post_data['appearance_theme'] ?? 'ChatGPT'),
             'avatar' => sanitize_text_field($post_data['appearance_avatar'] ?? '🤖'),
+            'avatar_image' => $avatar_image,
             'ai_name' => sanitize_text_field($post_data['appearance_ai_name'] ?? 'AI'),
             'start_sentence' => sanitize_text_field($post_data['appearance_start_sentence'] ?? 'How can I help?'),
             'user_name' => sanitize_text_field($post_data['appearance_user_name'] ?? 'You'),
@@ -161,6 +189,75 @@ class SteveGPT_Chatbots_Admin {
         );
         
         return $data;
+    }
+    
+    /**
+     * Handle avatar image upload
+     */
+    private static function handle_avatar_upload($file) {
+        // Check if file was uploaded
+        if (empty($file) || empty($file['name'])) {
+            error_log('SteveGPT: No file uploaded');
+            return '';
+        }
+        
+        // Check for upload errors
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            error_log('SteveGPT: Upload error code: ' . $file['error']);
+            return new WP_Error('upload_error', 'File upload failed with error code: ' . $file['error']);
+        }
+        
+        // Validate file type
+        $allowed_types = array('image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp');
+        $file_type = $file['type'];
+        
+        if (!in_array($file_type, $allowed_types)) {
+            error_log('SteveGPT: Invalid file type: ' . $file_type);
+            return new WP_Error('invalid_type', 'Invalid file type. Please upload JPG, PNG, GIF, or WebP.');
+        }
+        
+        // Validate file size (max 2MB)
+        if ($file['size'] > 2 * 1024 * 1024) {
+            error_log('SteveGPT: File too large: ' . $file['size']);
+            return new WP_Error('file_too_large', 'File is too large. Maximum size is 2MB.');
+        }
+        
+        // Load WordPress upload handler
+        if (!function_exists('wp_handle_upload')) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+        }
+        
+        $upload_overrides = array(
+            'test_form' => false,
+            'mimes' => array(
+                'jpg|jpeg|jpe' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+                'webp' => 'image/webp'
+            )
+        );
+        
+        // Attempt upload
+        try {
+            $uploaded_file = wp_handle_upload($file, $upload_overrides);
+            
+            if (isset($uploaded_file['error'])) {
+                error_log('SteveGPT: wp_handle_upload error: ' . $uploaded_file['error']);
+                return new WP_Error('upload_failed', $uploaded_file['error']);
+            }
+            
+            if (!isset($uploaded_file['url'])) {
+                error_log('SteveGPT: No URL in upload result');
+                return new WP_Error('upload_failed', 'Upload succeeded but no URL returned');
+            }
+            
+            error_log('SteveGPT: Avatar uploaded successfully: ' . $uploaded_file['url']);
+            return $uploaded_file['url'];
+            
+        } catch (Exception $e) {
+            error_log('SteveGPT: Exception during upload: ' . $e->getMessage());
+            return new WP_Error('upload_exception', 'Upload failed: ' . $e->getMessage());
+        }
     }
     
     /**
@@ -363,7 +460,7 @@ class SteveGPT_Chatbots_Admin {
                 <a href="<?php echo admin_url('admin.php?page=stevegpt-chatbots'); ?>">← Back to Chatbots</a>
             </p>
             
-            <form method="post" action="">
+            <form method="post" action="" enctype="multipart/form-data">
                 <?php wp_nonce_field('stevegpt_chatbot'); ?>
                 <input type="hidden" name="stevegpt_chatbot_action" value="<?php echo $action; ?>">
                 <?php if ($is_edit): ?>
@@ -517,6 +614,31 @@ class SteveGPT_Chatbots_Admin {
                             <td>
                                 <input type="text" id="appearance_avatar" name="appearance_avatar" value="<?php echo esc_attr($chatbot['appearance']['avatar'] ?? '🤖'); ?>" maxlength="4" style="width: 80px; font-size: 24px;">
                                 <p class="description">e.g., 🧑‍🏫 🎯 🎭 🤖 💬 🌟</p>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <th><label for="appearance_avatar_image">Custom Avatar Image</label></th>
+                            <td>
+                                <?php 
+                                $current_image = $chatbot['appearance']['avatar_image'] ?? '';
+                                if ($current_image): 
+                                ?>
+                                    <div style="margin-bottom: 10px;">
+                                        <img src="<?php echo esc_url($current_image); ?>" style="max-width: 100px; max-height: 100px; border-radius: 8px; border: 2px solid #C9A84C;">
+                                        <br>
+                                        <label>
+                                            <input type="checkbox" name="remove_avatar_image" value="1">
+                                            Remove current image
+                                        </label>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <input type="file" id="appearance_avatar_image" name="appearance_avatar_image" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp">
+                                <p class="description">
+                                    Upload a custom avatar image (overrides emoji).<br>
+                                    Recommended: Square image, 200x200px to 500x500px, PNG or JPG
+                                </p>
                             </td>
                         </tr>
                         

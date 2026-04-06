@@ -3,7 +3,7 @@
  * Plugin Name: SteveGPT - AI Integration for MFSD
  * Plugin URI: https://mfsd.me
  * Description: Custom AI integration for My Future Self Digital. Drop-in replacement for MWAI with direct Anthropic Claude API access.
- * Version: 2.1.0
+ * Version: 2.2.0
  * Author: MisterT9007
  * Author URI: https://mfsd.me
  * License: GPL v2 or later
@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('STEVEGPT_VERSION', '2.1.0');
+define('STEVEGPT_VERSION', '2.2.0');
 define('STEVEGPT_PATH', plugin_dir_path(__FILE__));
 define('STEVEGPT_URL', plugin_dir_url(__FILE__));
 define('STEVEGPT_BASENAME', plugin_basename(__FILE__));

@@ -42,6 +42,7 @@ class SteveGPT_Client {
         $model = $options['model'] ?? $this->model;
         $max_tokens = $options['max_tokens'] ?? 4096;
         $temperature = $options['temperature'] ?? 0.7;
+        $chatbot_id = $options['chatbot_id'] ?? null;
         
         // Separate system messages from conversation
         $system_message = '';
@@ -116,7 +117,7 @@ class SteveGPT_Client {
         $response_text = $data['content'][0]['text'];
         
         // Log usage for cost tracking
-        $this->log_usage($data, $request_duration);
+        $this->log_usage($data, $request_duration, $chatbot_id);
         
         return $response_text;
     }
@@ -126,8 +127,9 @@ class SteveGPT_Client {
      * 
      * @param array $response_data API response data
      * @param float $request_duration Request duration in seconds
+     * @param string $chatbot_id Optional chatbot ID
      */
-    private function log_usage($response_data, $request_duration) {
+    private function log_usage($response_data, $request_duration, $chatbot_id = null) {
         global $wpdb;
         
         $usage = $response_data['usage'] ?? array();
@@ -155,6 +157,9 @@ class SteveGPT_Client {
                 } elseif (strpos($trace['file'], 'mfsd-personality-test') !== false) {
                     $plugin_source = 'mfsd-personality-test';
                     break;
+                } elseif (strpos($trace['file'], 'mfsd-word-association') !== false) {
+                    $plugin_source = 'mfsd-word-association';
+                    break;
                 } elseif (strpos($trace['file'], 'mfsd-') !== false) {
                     // Generic MFSD plugin
                     preg_match('/mfsd-([a-z-]+)/', $trace['file'], $matches);
@@ -175,24 +180,26 @@ class SteveGPT_Client {
                 'model' => $this->model,
                 'user_id' => get_current_user_id(),
                 'plugin_source' => $plugin_source,
+                'chatbot_id' => $chatbot_id,
                 'input_tokens' => $input_tokens,
                 'output_tokens' => $output_tokens,
                 'total_tokens' => $total_tokens,
                 'cost' => $total_cost
             ),
-            array('%s', '%s', '%s', '%d', '%s', '%d', '%d', '%d', '%f')
+            array('%s', '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%d', '%f')
         );
         
         // Also log to error_log for debugging (optional - remove in production)
         error_log(sprintf(
-            'SteveGPT: %s | %d in + %d out = %d tokens | $%.4f | %.2fs | Source: %s',
+            'SteveGPT: %s | %d in + %d out = %d tokens | $%.4f | %.2fs | Source: %s | Chatbot: %s',
             $this->model,
             $input_tokens,
             $output_tokens,
             $total_tokens,
             $total_cost,
             $request_duration,
-            $plugin_source
+            $plugin_source,
+            $chatbot_id ?: 'none'
         ));
     }
     
